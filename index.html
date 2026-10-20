@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>JavaScript 211-235</title>
+<style>
+body{font-family:Arial;margin:20px}
+table{border-collapse:collapse}
+td,th{border:1px solid #000;padding:4px}
+.card{border:1px solid #000;padding:6px;margin:4px;display:inline-block}
+section{border-top:1px solid #000;margin-top:15px}
+#chat{border:1px solid #000;height:150px;overflow:auto;padding:5px}
+</style>
+</head>
+<body>
+<h1>JavaScript 211-235</h1>
+<p>Задания 211-230: результат ниже и в консоли (F12). Задания 231-235 работают на странице.</p>
+<pre id="out"></pre>
+
+<section><h2>231 JavaScript Test</h2><div id="quiz"></div></section>
+
+<section><h2>232 Заявки на оборудование</h2>
+<input id="eqName" placeholder="Оборудование">
+<input id="eqDate" type="date">
+<input id="eqGoal" placeholder="Цель">
+<button onclick="addReq()">Подать заявку</button><br><br>
+<input id="eqSearch" placeholder="Поиск по названию" oninput="showReq()"><br><br>
+<table id="reqTable"></table></section>
+
+<section><h2>233 Статистика студентов</h2>
+<input id="stSearch" placeholder="Поиск по имени" oninput="showStuds()">
+<button onclick="sortOn=!sortOn;showStuds()">Сортировка по баллам</button>
+<p id="stInfo"></p>
+<table id="stTable"></table>
+<h3>Диаграмма</h3><div id="stChart"></div></section>
+
+<section><h2>234 Чат-помощник</h2>
+<div id="chat"></div>
+<input id="chatText" placeholder="Вопрос (HTML, CSS, JavaScript)">
+<button onclick="sendMsg()">Отправить</button>
+<button onclick="chat.innerHTML=''">Очистить чат</button></section>
+
+<section><h2>235 IT Laboratory Manager</h2>
+<select id="pcFilter" onchange="showPcs()">
+<option value="all">Все</option><option value="ok">Исправные</option><option value="bad">Неисправные</option>
+</select>
+<input id="pcSearch" placeholder="Поиск по номеру" oninput="showPcs()">
+<button onclick="exportCsv()">Экспорт в CSV</button>
+<p id="pcInfo"></p>
+<input id="faultNum" placeholder="Номер ПК">
+<input id="faultText" placeholder="Описание неисправности">
+<button onclick="addFault()">Зарегистрировать</button>
+<div id="pcCards"></div></section>
+
+<script>
+function log(t){console.log(t);out.textContent+=t+"\n";}
+const sum=a=>a.reduce((s,x)=>s+x,0);
+
+// ---------- 211 ----------
+function tokenStatus(t){
+  if(t<0) return "Ошибка: отрицательное значение";
+  else if(t>1000) return "Достаточно токенов";
+  else if(t>100) return "Токены заканчиваются";
+  else if(t>0) return "Критически мало токенов";
+  else return "Лимит исчерпан";
+}
+[1500,500,50,0,-5].forEach(t=>log("211: tokens="+t+" -> "+tokenStatus(t)));
+
+// ---------- 212 ----------
+function ready(c,t){
+  if(c&&t) return "Задание готово к отправке";
+  if(!c) return "Завершите программирование";
+  return "Необходимо тестирование";
+}
+[[true,true],[true,false],[false,true],[false,false]].forEach(p=>log("212: "+p+" -> "+ready(p[0],p[1])));
+
+// ---------- 213 ----------
+function tariff(ram){
+  if(ram<=0) return -1;
+  if(ram<=4) return 3000;
+  if(ram<=8) return 5000;
+  if(ram<=16) return 9000;
+  return 15000;
+}
+let ram=16, price=tariff(ram);
+if(price==-1) log("213: Ошибка: неверный объём памяти");
+else log("213: RAM "+ram+" ГБ, в месяц "+price+" ₸, за 6 месяцев "+price*6+" ₸");
+
+// ---------- 214 ----------
+function codeQuality(e){
+  if(e==0) return "Отличный код";
+  if(e<=2) return "Незначительные ошибки";
+  if(e<=5) return "Требуется исправление";
+  return "Необходимо переработать программу";
+}
+[3,0,2,4,8].forEach(e=>log("214: errors="+e+" -> "+codeQuality(e)));
+
+// ---------- 215 ----------
+let status=3;
+switch(status){
+  case 1: log("215: Новая"); break;
+  case 2: log("215: На рассмотрении"); break;
+  case 3: log("215: Одобрена"); break;
+  case 4: log("215: Отклонена"); break;
+  case 5: log("215: Выполнена"); break;
+  default: log("215: Неизвестный код");
+}
+
+// ---------- 216 ----------
+let scores=[95,82,47,75,100,68,55,91,39,84];
+let hi=0,low=0;
+for(let s of scores){ if(s>=90) hi++; if(s<50) low++; }
+log("216: студентов "+scores.length+", средний балл "+sum(scores)/scores.length+", от 90: "+hi+", меньше 50: "+low+", max "+Math.max(...scores)+", min "+Math.min(...scores));
+
+// ---------- 217 ----------
+let rooms=[];
+for(let i=201;i<=215;i++) rooms.push(i);
+log("217: все: "+rooms.join(", "));
+log("217: чётные: "+rooms.filter(r=>r%2==0).join(", "));
+log("217: количество: "+rooms.length);
+
+// ---------- 218 ----------
+let projectName="Artificial Intelligence";
+let spaces=projectName.split(" ").length-1;
+log("218: символов "+projectName.length+", пробелов "+spaces+", букв "+(projectName.length-spaces)+", букв i: "+(projectName.toLowerCase().split("i").length-1));
+
+// ---------- 219 ----------
+let prices=[85000,250000,120000,460000,95000,310000];
+let sorted=prices.slice().sort((a,b)=>b-a);
+let top3=sorted.slice(0,3);
+log("219: по убыванию "+sorted.join(", "));
+log("219: топ-3 "+top3.join(", ")+", сумма "+sum(top3)+", средняя цена "+Math.round(sum(prices)/prices.length));
+
+// ---------- 220 ----------
+let completedTasks=[4,7,5,9,3,8,6];
+log("220: всего "+sum(completedTasks)+", max "+Math.max(...completedTasks)+", min "+Math.min(...completedTasks)+", среднее "+(sum(completedTasks)/completedTasks.length).toFixed(1)+", дней больше 5: "+completedTasks.filter(t=>t>5).length);
+
+// ---------- 221 ----------
+let files=["index.html","style.css","app.js","script.js","photo.png","main.js"];
+let jsFiles=files.filter(f=>f.endsWith(".js"));
+log("221: "+jsFiles.join(", ")+" (всего "+jsFiles.length+")");
+
+// ---------- 222 ----------
+let executionTimes=[120,85,230,95,150,70,180];
+let slow=executionTimes.filter(t=>t>150);
+log("222: min "+Math.min(...executionTimes)+", max "+Math.max(...executionTimes)+", среднее "+(sum(executionTimes)/executionTimes.length).toFixed(1)+" мс");
+log("222: больше 150 мс: "+slow.join(", ")+" (количество "+slow.length+")");
+
+// ---------- 223 ----------
+let grades=[];
+for(let i=0;i<15;i++) grades.push(Math.floor(Math.random()*101));
+log("223: оценки "+grades.join(", "));
+log("223: средний балл "+(sum(grades)/grades.length).toFixed(1)+", оценок от 50: "+grades.filter(g=>g>=50).length);
+
+// ---------- 224 ----------
+function calculateAICost(tokens,rate){
+  if(typeof tokens!="number"||typeof rate!="number"||tokens<0||rate<0) return "Ошибка";
+  return tokens/1000*rate;
+}
+log("224: "+calculateAICost(12500,8)+" ₸");
+
+// ---------- 225 ----------
+let roomList=[
+  {number:201,total:24,occupied:18},
+  {number:202,total:20,occupied:20},
+  {number:203,total:25,occupied:12},
+  {number:204,total:24,occupied:22}
+];
+function analyzeRooms(list){
+  let free=0, best=list[0];
+  list.forEach(r=>{
+    let f=r.total-r.occupied;
+    free+=f;
+    log("225: кабинет "+r.number+" - загрузка "+Math.round(r.occupied/r.total*100)+"%"+(f==0?" (полностью занят)":""));
+    if(f>best.total-best.occupied) best=r;
+  });
+  log("225: больше всего свободных мест в кабинете "+best.number);
+  log("225: всего свободных мест "+free);
+}
+analyzeRooms(roomList);
+
+// ---------- 226 ----------
+let users=[{name:"Алия",requests:25},{name:"Арман",requests:12},{name:"Мадина",requests:48},{name:"Данияр",requests:7}];
+let total=sum(users.map(u=>u.requests));
+let rating=users.slice().sort((a,b)=>b.requests-a.requests);
+log("226: всего запросов "+total+", среднее "+total/users.length);
+log("226: самый активный "+rating[0].name);
+log("226: больше 20: "+users.filter(u=>u.requests>20).map(u=>u.name).join(", "));
+rating.forEach((u,i)=>log("226: "+(i+1)+". "+u.name+" - "+u.requests));
+
+// ---------- 227 ----------
+let budget=[{name:"Разработка",cost:200000},{name:"Дизайн",cost:80000},{name:"Сервер",cost:50000},{name:"Тестирование",cost:70000}];
+function calculateBudget(b){
+  let all=sum(b.map(x=>x.cost));
+  let max=b[0];
+  b.forEach(x=>{
+    if(x.cost>max.cost) max=x;
+    log("227: "+x.name+" - "+x.cost+" ₸ ("+(x.cost/all*100).toFixed(1)+"%)");
+  });
+  log("227: общая стоимость "+all+" ₸");
+  log("227: самая дорогая статья: "+max.name);
+  log("227: бюджет больше 350 000 ₸: "+(all>350000?"да":"нет"));
+}
+calculateBudget(budget);
+
+// ---------- 228 ----------
+let robots=[{name:"Robot A",battery:95,online:true},{name:"Robot B",battery:15,online:true},{name:"Robot C",battery:70,online:false},{name:"Robot D",battery:45,online:true}];
+function checkRobots(r){
+  log("228: подключены: "+r.filter(x=>x.online).map(x=>x.name).join(", "));
+  log("228: заряд ниже 20%: "+r.filter(x=>x.battery<20).map(x=>x.name).join(", "));
+  log("228: отключены: "+r.filter(x=>!x.online).map(x=>x.name).join(", "));
+  log("228: средний заряд "+sum(r.map(x=>x.battery))/r.length+"%");
+}
+checkRobots(robots);
+
+// ---------- 229 ----------
+let courses=[{title:"JavaScript",enrolled:30,completed:24},{title:"Python",enrolled:25,completed:20},{title:"AI Basics",enrolled:40,completed:35},{title:"HTML",enrolled:20,completed:12}];
+courses.forEach(c=>{c.percent=c.completed/c.enrolled*100; log("229: "+c.title+" - "+c.percent.toFixed(1)+"%");});
+let byPercent=courses.slice().sort((a,b)=>b.percent-a.percent);
+let allEnrolled=sum(courses.map(c=>c.enrolled));
+log("229: лучший курс "+byPercent[0].title+", худший "+byPercent[byPercent.length-1].title);
+log("229: всего регистраций "+allEnrolled+", общий процент завершения "+(sum(courses.map(c=>c.completed))/allEnrolled*100).toFixed(1)+"%");
+
+// ---------- 230 ----------
+let team=[{name:"Алия",tasks:5},{name:"Руслан",tasks:8},{name:"Арман",tasks:3},{name:"Мадина",tasks:6}];
+function analyzeTeam(t){
+  let s=t.slice().sort((a,b)=>b.tasks-a.tasks);
+  let all=sum(t.map(x=>x.tasks));
+  log("230: всего задач "+all+", среднее "+all/t.length);
+  log("230: больше всех: "+s[0].name+", меньше всех: "+s[s.length-1].name);
+}
+function addTask(t,name){
+  let p=t.find(x=>x.name==name);
+  if(p) p.tasks++;
+  else log("230: участник не найден");
+}
+analyzeTeam(team);
+addTask(team,"Арман");
+log("230: после новой задачи:");
+analyzeTeam(team);
+
+// ---------- 231 Тест ----------
+let qs=[
+["Каким словом объявляют переменную?",["let","fix","dim","int"],0],
+["Какой метод добавляет элемент в конец массива?",["pop","push","shift","add"],1],
+["Что вернёт typeof 5?",["number","string","int","float"],0],
+["Какой оператор строгого равенства?",["=","==","===","=>"],2],
+["Как вывести текст в консоль?",["console.log()","print()","echo()","write()"],0],
+["Как узнать длину массива arr?",["arr.size","arr.length","arr.count","len(arr)"],1],
+["Какой метод создаёт новый массив по условию?",["filter","push","join","split"],0],
+["Чему равно 10 % 3?",["1","3","0","10"],0],
+["Где хранит данные localStorage?",["В браузере","В Excel","В Word","В принтере"],0],
+["Какая функция превращает строку в число?",["parseInt","toString","charAt","slice"],0]
+];
+let qi=0, right=0;
+function showQ(){
+  let q=qs[qi];
+  quiz.innerHTML="<p>Вопрос "+(qi+1)+" из "+qs.length+": "+q[0]+"</p>"+
+    q[1].map((o,i)=>"<label><input type='radio' name='a' value='"+i+"'> "+o+"</label><br>").join("")+
+    "<br><button onclick='nextQ()'>Следующий вопрос</button>";
+}
+function nextQ(){
+  let c=document.querySelector("input[name=a]:checked");
+  if(!c){alert("Выберите ответ");return;}
+  if(c.value==qs[qi][2]) right++;
+  qi++;
+  if(qi<qs.length) showQ();
+  else{
+    let p=right/qs.length*100;
+    let mark=p>=85?5:p>=65?4:p>=50?3:2;
+    quiz.innerHTML="<p>Правильных ответов: "+right+" из "+qs.length+" ("+p+"%). Оценка: "+mark+"</p><button onclick='qi=0;right=0;showQ()'>Пройти заново</button>";
+  }
+}
+showQ();
+
+// ---------- 232 Заявки ----------
+let reqs=JSON.parse(localStorage.getItem("reqs")||"[]");
+let statuses=["Новая","На рассмотрении","Одобрена","Отклонена","Выполнена"];
+function addReq(){
+  let n=eqName.value.trim(), d=eqDate.value, g=eqGoal.value.trim();
+  if(!n||!d||!g){alert("Заполните все поля");return;}
+  reqs.push({name:n,date:d,goal:g,status:"Новая"});
+  eqName.value=eqDate.value=eqGoal.value="";
+  saveReq();
+}
+function saveReq(){localStorage.setItem("reqs",JSON.stringify(reqs));showReq();}
+function setStatus(i,s){reqs[i].status=s;saveReq();}
+function showReq(){
+  let f=eqSearch.value.toLowerCase();
+  let h="<tr><th>Оборудование</th><th>Дата</th><th>Цель</th><th>Статус</th></tr>";
+  reqs.forEach((r,i)=>{
+    if(!r.name.toLowerCase().includes(f)) return;
+    h+="<tr><td>"+r.name+"</td><td>"+r.date+"</td><td>"+r.goal+"</td><td><select onchange='setStatus("+i+",this.value)'>"+
+      statuses.map(s=>"<option"+(s==r.status?" selected":"")+">"+s+"</option>").join("")+"</select></td></tr>";
+  });
+  reqTable.innerHTML=h;
+}
+showReq();
+
+// ---------- 233 Студенты ----------
+let studs=[
+  {name:"Алия",score:92,att:95},{name:"Арман",score:45,att:70},{name:"Мадина",score:78,att:88},
+  {name:"Данияр",score:60,att:80},{name:"Руслан",score:38,att:65},{name:"Айгерим",score:85,att:92}
+];
+let sortOn=false;
+function showStuds(){
+  let f=stSearch.value.toLowerCase();
+  let l=studs.filter(s=>s.name.toLowerCase().includes(f));
+  if(sortOn) l.sort((a,b)=>b.score-a.score);
+  let h="<tr><th>Имя</th><th>Балл</th><th>Посещаемость, %</th></tr>";
+  l.forEach(s=>h+="<tr><td>"+s.name+"</td><td>"+s.score+"</td><td>"+s.att+"</td></tr>");
+  stTable.innerHTML=h;
+  stChart.innerHTML=l.map(s=>"<div>"+s.name+" <span style='display:inline-block;background:#000;height:10px;width:"+s.score*2+"px'></span> "+s.score+"</div>").join("");
+}
+stInfo.textContent="Средний балл: "+(sum(studs.map(s=>s.score))/studs.length).toFixed(1)+
+  ". Средняя посещаемость: "+(sum(studs.map(s=>s.att))/studs.length).toFixed(1)+
+  "%. Баллы ниже 50: "+studs.filter(s=>s.score<50).map(s=>s.name).join(", ");
+showStuds();
+
+// ---------- 234 Чат ----------
+let answers={
+  html:"HTML - язык разметки веб-страниц.",
+  css:"CSS задаёт стили: цвета, шрифты, отступы.",
+  javascript:"JavaScript делает страницу интерактивной."
+};
+function addMsg(who,text){
+  let t=new Date().toLocaleTimeString();
+  chat.innerHTML+="<p>["+t+"] "+who+": "+text+"</p>";
+  chat.scrollTop=chat.scrollHeight;
+}
+function sendMsg(){
+  let q=chatText.value.trim();
+  if(!q) return;
+  addMsg("Вы",q);
+  let reply="Я пока не знаю ответа";
+  for(let key in answers){
+    if(q.toLowerCase().includes(key)) reply=answers[key];
+  }
+  addMsg("Бот",reply);
+  chatText.value="";
+}
+
+// ---------- 235 Лаборатория ----------
+let pcs=JSON.parse(localStorage.getItem("pcs")||"null")||[
+  {num:1,room:201,ok:true},{num:2,room:201,ok:false},{num:3,room:202,ok:true},
+  {num:4,room:202,ok:true},{num:5,room:203,ok:false},{num:6,room:203,ok:true}
+];
+function savePcs(){localStorage.setItem("pcs",JSON.stringify(pcs));showPcs();}
+function togglePc(i){pcs[i].ok=!pcs[i].ok;savePcs();}
+function addFault(){
+  let pc=pcs.find(p=>p.num==faultNum.value);
+  if(!pc||!faultText.value.trim()){alert("Проверьте номер ПК и описание");return;}
+  pc.ok=false;
+  pc.fault=faultText.value.trim();
+  faultText.value="";
+  savePcs();
+}
+function showPcs(){
+  let f=pcFilter.value, s=pcSearch.value, h="";
+  pcs.forEach((p,i)=>{
+    if(f=="ok"&&!p.ok) return;
+    if(f=="bad"&&p.ok) return;
+    if(s&&p.num!=s) return;
+    h+="<div class='card'>ПК №"+p.num+"<br>Кабинет "+p.room+"<br>"+(p.ok?"Исправен":"Неисправен"+(p.fault?": "+p.fault:""))+
+      "<br><button onclick='togglePc("+i+")'>Изменить состояние</button></div>";
+  });
+  pcCards.innerHTML=h;
+  let ok=pcs.filter(p=>p.ok).length;
+  pcInfo.textContent="Исправных: "+ok+" из "+pcs.length+" ("+Math.round(ok/pcs.length*100)+"%)";
+}
+function exportCsv(){
+  let t="num;room;state\n"+pcs.map(p=>p.num+";"+p.room+";"+(p.ok?"ok":"bad")).join("\n");
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));
+  a.download="report.csv";
+  a.click();
+}
+showPcs();
+</script>
+</body>
+</html>
